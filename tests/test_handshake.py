@@ -38,7 +38,10 @@ REQUESTS = [
         "jsonrpc": "2.0",
         "id": 3,
         "method": "tools/call",
-        "params": {"name": "echo", "arguments": {"text": "hola redes"}},
+        "params": {
+            "name": "search_medications",
+            "arguments": {"query": "ibuprofeno"},
+        },
     },
     # Unknown method -> -32601
     {"jsonrpc": "2.0", "id": 4, "method": "does/not/exist"},
@@ -47,7 +50,7 @@ REQUESTS = [
         "jsonrpc": "2.0",
         "id": 5,
         "method": "tools/call",
-        "params": {"name": "echo", "arguments": {}},
+        "params": {"name": "check_inventory", "arguments": {}},
     },
 ]
 
