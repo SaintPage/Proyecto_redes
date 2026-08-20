@@ -1,0 +1,167 @@
+{
+  "_comment": "Fictional catalog for academic purposes. Not real medical data.",
+  "medications": [
+    {
+      "sku": "MED-001",
+      "name": "Acetaminofen 500 mg",
+      "active_ingredient": "acetaminofen",
+      "category": "analgesico",
+      "presentation": "Tabletas, caja de 20",
+      "requires_prescription": false,
+      "description": "Analgesico y antipiretico de venta libre."
+    },
+    {
+      "sku": "MED-002",
+      "name": "Ibuprofeno 400 mg",
+      "active_ingredient": "ibuprofeno",
+      "category": "antiinflamatorio",
+      "presentation": "Tabletas, caja de 30",
+      "requires_prescription": false,
+      "description": "Antiinflamatorio no esteroideo de venta libre."
+    },
+    {
+      "sku": "MED-003",
+      "name": "Naproxeno 250 mg",
+      "active_ingredient": "naproxeno",
+      "category": "antiinflamatorio",
+      "presentation": "Tabletas, caja de 20",
+      "requires_prescription": false,
+      "description": "Antiinflamatorio de accion prolongada."
+    },
+    {
+      "sku": "MED-004",
+      "name": "Loratadina 10 mg",
+      "active_ingredient": "loratadina",
+      "category": "antialergico",
+      "presentation": "Tabletas, caja de 10",
+      "requires_prescription": false,
+      "description": "Antihistaminico no sedante."
+    },
+    {
+      "sku": "MED-005",
+      "name": "Cetirizina 10 mg",
+      "active_ingredient": "cetirizina",
+      "category": "antialergico",
+      "presentation": "Tabletas, caja de 10",
+      "requires_prescription": false,
+      "description": "Antihistaminico para rinitis alergica."
+    },
+    {
+      "sku": "MED-006",
+      "name": "Antigripal compuesto",
+      "active_ingredient": "acetaminofen + clorfeniramina + fenilefrina",
+      "category": "antigripal",
+      "presentation": "Capsulas, caja de 12",
+      "requires_prescription": false,
+      "description": "Alivio sintomatico de resfriado comun."
+    },
+    {
+      "sku": "MED-007",
+      "name": "Jarabe para la tos 120 ml",
+      "active_ingredient": "dextrometorfano",
+      "category": "antigripal",
+      "presentation": "Frasco 120 ml",
+      "requires_prescription": false,
+      "description": "Antitusivo de venta libre."
+    },
+    {
+      "sku": "MED-008",
+      "name": "Omeprazol 20 mg",
+      "active_ingredient": "omeprazol",
+      "category": "gastrointestinal",
+      "presentation": "Capsulas, caja de 14",
+      "requires_prescription": false,
+      "description": "Inhibidor de bomba de protones para acidez."
+    },
+    {
+      "sku": "MED-009",
+      "name": "Sales de rehidratacion oral",
+      "active_ingredient": "electrolitos",
+      "category": "gastrointestinal",
+      "presentation": "Sobres, caja de 5",
+      "requires_prescription": false,
+      "description": "Reposicion de liquidos y electrolitos."
+    },
+    {
+      "sku": "MED-010",
+      "name": "Antiacido masticable",
+      "active_ingredient": "hidroxido de aluminio y magnesio",
+      "category": "gastrointestinal",
+      "presentation": "Tabletas masticables, caja de 24",
+      "requires_prescription": false,
+      "description": "Alivio rapido de acidez estomacal."
+    },
+    {
+      "sku": "MED-011",
+      "name": "Amoxicilina 500 mg",
+      "active_ingredient": "amoxicilina",
+      "category": "antibiotico",
+      "presentation": "Capsulas, caja de 21",
+      "requires_prescription": true,
+      "description": "Antibiotico betalactamico. Requiere receta medica."
+    },
+    {
+      "sku": "MED-012",
+      "name": "Azitromicina 500 mg",
+      "active_ingredient": "azitromicina",
+      "category": "antibiotico",
+      "presentation": "Tabletas, caja de 3",
+      "requires_prescription": true,
+      "description": "Antibiotico macrolido. Requiere receta medica."
+    },
+    {
+      "sku": "MED-013",
+      "name": "Crema de hidrocortisona 1%",
+      "active_ingredient": "hidrocortisona",
+      "category": "dermatologico",
+      "presentation": "Tubo 15 g",
+      "requires_prescription": false,
+      "description": "Alivio de irritacion y picazon leve en la piel."
+    },
+    {
+      "sku": "MED-014",
+      "name": "Alcohol en gel 250 ml",
+      "active_ingredient": "etanol 70%",
+      "category": "primeros_auxilios",
+      "presentation": "Frasco 250 ml",
+      "requires_prescription": false,
+      "description": "Antiseptico de manos."
+    },
+    {
+      "sku": "MED-015",
+      "name": "Curitas surtidas",
+      "active_ingredient": "n/a",
+      "category": "primeros_auxilios",
+      "presentation": "Caja de 40 unidades",
+      "requires_prescription": false,
+      "description": "Apositos adhesivos de varios tamanos."
+    },
+    {
+      "sku": "MED-016",
+      "name": "Vitamina C 1000 mg",
+      "active_ingredient": "acido ascorbico",
+      "category": "vitaminas",
+      "presentation": "Tabletas efervescentes, tubo de 10",
+      "requires_prescription": false,
+      "description": "Suplemento vitaminico."
+    },
+    {
+      "sku": "MED-017",
+      "name": "Complejo B",
+      "active_ingredient": "vitaminas del complejo B",
+      "category": "vitaminas",
+      "presentation": "Tabletas, caja de 30",
+      "requires_prescription": false,
+      "description": "Suplemento vitaminico."
+    },
+    {
+      "sku": "MED-018",
+      "name": "Suero fisiologico 500 ml",
+      "active_ingredient": "cloruro de sodio 0.9%",
+      "category": "primeros_auxilios",
+      "presentation": "Frasco 500 ml",
+      "requires_prescription": false,
+      "description": "Limpieza de heridas y lavado nasal."
+    }
+  ]
+}

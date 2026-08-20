@@ -1,0 +1,116 @@
+{
+  "_comment": "Fictional inventory for academic purposes. Prices in GTQ.",
+  "currency": "GTQ",
+  "branches": [
+    {
+      "id": "SUC-01",
+      "name": "Sucursal Mixco",
+      "address": "Calzada San Juan 12-45, Mixco",
+      "hours": "07:00-21:00"
+    },
+    {
+      "id": "SUC-02",
+      "name": "Sucursal Zona 10",
+      "address": "Avenida Reforma 8-20, Zona 10",
+      "hours": "08:00-20:00"
+    },
+    {
+      "id": "SUC-03",
+      "name": "Sucursal Villa Nueva",
+      "address": "Bulevar El Frutal 3-15, Villa Nueva",
+      "hours": "07:00-22:00"
+    }
+  ],
+  "stock": {
+    "MED-001": {
+      "SUC-01": { "units": 84, "price": 25.5 },
+      "SUC-02": { "units": 40, "price": 27.0 },
+      "SUC-03": { "units": 0, "price": 25.5 }
+    },
+    "MED-002": {
+      "SUC-01": { "units": 52, "price": 38.0 },
+      "SUC-02": { "units": 31, "price": 39.5 },
+      "SUC-03": { "units": 18, "price": 38.0 }
+    },
+    "MED-003": {
+      "SUC-01": { "units": 12, "price": 45.0 },
+      "SUC-02": { "units": 0, "price": 46.0 },
+      "SUC-03": { "units": 9, "price": 45.0 }
+    },
+    "MED-004": {
+      "SUC-01": { "units": 60, "price": 32.0 },
+      "SUC-02": { "units": 22, "price": 33.5 },
+      "SUC-03": { "units": 41, "price": 32.0 }
+    },
+    "MED-005": {
+      "SUC-01": { "units": 28, "price": 35.0 },
+      "SUC-02": { "units": 15, "price": 36.0 },
+      "SUC-03": { "units": 7, "price": 35.0 }
+    },
+    "MED-006": {
+      "SUC-01": { "units": 45, "price": 42.0 },
+      "SUC-02": { "units": 38, "price": 43.5 },
+      "SUC-03": { "units": 25, "price": 42.0 }
+    },
+    "MED-007": {
+      "SUC-01": { "units": 19, "price": 55.0 },
+      "SUC-02": { "units": 11, "price": 57.0 },
+      "SUC-03": { "units": 0, "price": 55.0 }
+    },
+    "MED-008": {
+      "SUC-01": { "units": 33, "price": 48.0 },
+      "SUC-02": { "units": 27, "price": 49.5 },
+      "SUC-03": { "units": 14, "price": 48.0 }
+    },
+    "MED-009": {
+      "SUC-01": { "units": 70, "price": 18.0 },
+      "SUC-02": { "units": 55, "price": 19.0 },
+      "SUC-03": { "units": 62, "price": 18.0 }
+    },
+    "MED-010": {
+      "SUC-01": { "units": 41, "price": 22.5 },
+      "SUC-02": { "units": 36, "price": 23.0 },
+      "SUC-03": { "units": 29, "price": 22.5 }
+    },
+    "MED-011": {
+      "SUC-01": { "units": 24, "price": 65.0 },
+      "SUC-02": { "units": 18, "price": 67.0 },
+      "SUC-03": { "units": 10, "price": 65.0 }
+    },
+    "MED-012": {
+      "SUC-01": { "units": 8, "price": 95.0 },
+      "SUC-02": { "units": 5, "price": 98.0 },
+      "SUC-03": { "units": 0, "price": 95.0 }
+    },
+    "MED-013": {
+      "SUC-01": { "units": 16, "price": 52.0 },
+      "SUC-02": { "units": 21, "price": 54.0 },
+      "SUC-03": { "units": 13, "price": 52.0 }
+    },
+    "MED-014": {
+      "SUC-01": { "units": 95, "price": 28.0 },
+      "SUC-02": { "units": 80, "price": 29.0 },
+      "SUC-03": { "units": 77, "price": 28.0 }
+    },
+    "MED-015": {
+      "SUC-01": { "units": 58, "price": 30.0 },
+      "SUC-02": { "units": 44, "price": 31.0 },
+      "SUC-03": { "units": 39, "price": 30.0 }
+    },
+    "MED-016": {
+      "SUC-01": { "units": 37, "price": 40.0 },
+      "SUC-02": { "units": 29, "price": 41.5 },
+      "SUC-03": { "units": 20, "price": 40.0 }
+    },
+    "MED-017": {
+      "SUC-01": { "units": 26, "price": 58.0 },
+      "SUC-02": { "units": 17, "price": 60.0 },
+      "SUC-03": { "units": 12, "price": 58.0 }
+    },
+    "MED-018": {
+      "SUC-01": { "units": 48, "price": 24.0 },
+      "SUC-02": { "units": 33, "price": 25.0 },
+      "SUC-03": { "units": 31, "price": 24.0 }
+    }
+  }
+}
