@@ -1,0 +1,12 @@
+19:42:10 [INFO] mcp-server: MCP server started (stdio transport)
+19:42:10 [INFO] mcp-server: <- request #1: initialize
+19:42:10 [INFO] mcp-server: Client: test-client, protocol: 2025-06-18
+19:42:10 [INFO] mcp-server: <- notification: notifications/initialized
+19:42:10 [INFO] mcp-server: Handshake complete, server ready
+19:42:10 [INFO] mcp-server: <- request #2: tools/list
+19:42:10 [INFO] mcp-server: -> tools/list: 1 tool(s)
+19:42:10 [INFO] mcp-server: <- request #3: tools/call
+19:42:10 [INFO] mcp-server: -> tools/call 'echo' ok
+19:42:10 [INFO] mcp-server: <- request #4: does/not/exist
+19:42:10 [INFO] mcp-server: <- request #5: tools/call
+19:42:10 [INFO] mcp-server: stdin closed, shutting down

@@ -1,0 +1,1 @@
+"""Manual MCP server implementation (JSON-RPC 2.0 over stdio)."""
