@@ -1,0 +1,58 @@
+19:42:10 [INFO] mcp-server: MCP server started (stdio transport)
+19:42:10 [INFO] mcp-server: <- request #1: initialize
+19:42:10 [INFO] mcp-server: Client: test-client, protocol: 2025-06-18
+19:42:10 [INFO] mcp-server: <- notification: notifications/initialized
+19:42:10 [INFO] mcp-server: Handshake complete, server ready
+19:42:10 [INFO] mcp-server: <- request #2: tools/list
+19:42:10 [INFO] mcp-server: -> tools/list: 1 tool(s)
+19:42:10 [INFO] mcp-server: <- request #3: tools/call
+19:42:10 [INFO] mcp-server: -> tools/call 'echo' ok
+19:42:10 [INFO] mcp-server: <- request #4: does/not/exist
+19:42:10 [INFO] mcp-server: <- request #5: tools/call
+19:42:10 [INFO] mcp-server: stdin closed, shutting down
+17:24:41 [INFO] mcp-server: MCP server started (stdio transport)
+17:24:41 [INFO] mcp-server: <- request #1: initialize
+17:24:41 [INFO] mcp-server: Client: test-client, protocol: 2025-06-18
+17:24:41 [INFO] mcp-server: <- notification: notifications/initialized
+17:24:41 [INFO] mcp-server: Handshake complete, server ready
+17:24:41 [INFO] mcp-server: <- request #2: tools/list
+17:24:41 [INFO] mcp-server: -> tools/list: 5 tool(s)
+17:24:41 [INFO] mcp-server: <- request #3: tools/call
+17:24:41 [INFO] mcp-server: <- request #4: does/not/exist
+17:24:41 [INFO] mcp-server: <- request #5: tools/call
+17:24:41 [INFO] mcp-server: stdin closed, shutting down
+17:25:18 [INFO] mcp-server: MCP server started (stdio transport)
+17:25:18 [INFO] mcp-server: <- request #1: initialize
+17:25:18 [INFO] mcp-server: Client: test-client, protocol: 2025-06-18
+17:25:18 [INFO] mcp-server: <- notification: notifications/initialized
+17:25:18 [INFO] mcp-server: Handshake complete, server ready
+17:25:18 [INFO] mcp-server: <- request #2: tools/list
+17:25:18 [INFO] mcp-server: -> tools/list: 5 tool(s)
+17:25:18 [INFO] mcp-server: <- request #3: tools/call
+17:25:18 [INFO] mcp-server: <- request #4: does/not/exist
+17:25:18 [INFO] mcp-server: <- request #5: tools/call
+17:25:18 [INFO] mcp-server: stdin closed, shutting down
+17:31:46 [INFO] mcp-server: MCP server started (stdio transport)
+17:31:46 [INFO] mcp-server: <- request #1: initialize
+17:31:46 [INFO] mcp-server: Client: test-client, protocol: 2025-06-18
+17:31:46 [INFO] mcp-server: <- notification: notifications/initialized
+17:31:46 [INFO] mcp-server: Handshake complete, server ready
+17:31:46 [INFO] mcp-server: <- request #2: tools/list
+17:31:46 [INFO] mcp-server: -> tools/list: 5 tool(s)
+17:31:46 [INFO] mcp-server: <- request #3: tools/call
+17:31:46 [INFO] mcp-server: -> tools/call 'search_medications' ok
+17:31:46 [INFO] mcp-server: <- request #4: does/not/exist
+17:31:46 [INFO] mcp-server: <- request #5: tools/call
+17:31:46 [INFO] mcp-server: stdin closed, shutting down
+17:32:06 [INFO] mcp-server: MCP server started (stdio transport)
+17:32:06 [INFO] mcp-server: <- request #1: initialize
+17:32:06 [INFO] mcp-server: Client: test-client, protocol: 2025-06-18
+17:32:06 [INFO] mcp-server: <- notification: notifications/initialized
+17:32:06 [INFO] mcp-server: Handshake complete, server ready
+17:32:06 [INFO] mcp-server: <- request #2: tools/list
+17:32:06 [INFO] mcp-server: -> tools/list: 5 tool(s)
+17:32:06 [INFO] mcp-server: <- request #3: tools/call
+17:32:06 [INFO] mcp-server: -> tools/call 'search_medications' ok
+17:32:06 [INFO] mcp-server: <- request #4: does/not/exist
+17:32:06 [INFO] mcp-server: <- request #5: tools/call
+17:32:06 [INFO] mcp-server: stdin closed, shutting down
