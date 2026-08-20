@@ -22,6 +22,7 @@ DATA_DIR = os.path.join(
 CATALOG_PATH = os.path.join(DATA_DIR, "catalog.json")
 INVENTORY_PATH = os.path.join(DATA_DIR, "inventory.json")
 ORDERS_PATH = os.path.join(DATA_DIR, "orders.json")
+SYMPTOM_MAP_PATH = os.path.join(DATA_DIR, "symptom_map.json")
 
 # Orders are written from tool calls; a lock avoids a corrupted file if
 # two calls ever overlap.
@@ -29,6 +30,7 @@ _orders_lock = threading.Lock()
 
 _catalog: Optional[dict] = None
 _inventory: Optional[dict] = None
+_symptom_map: Optional[dict] = None
 
 
 def _load(path: str) -> dict:
@@ -52,8 +54,26 @@ def get_inventory() -> dict:
     return _inventory
 
 
+def get_symptom_map() -> dict:
+    """Return the symptom-to-category map, loading it on first use."""
+    global _symptom_map
+    if _symptom_map is None:
+        _symptom_map = _load(SYMPTOM_MAP_PATH)
+    return _symptom_map
+
+
 def get_medications() -> list[dict]:
     return get_catalog()["medications"]
+
+
+def medications_in_category(category: str) -> list[dict]:
+    """Return all OTC medications belonging to a category."""
+    return [
+        medication
+        for medication in get_medications()
+        if medication["category"] == category
+        and not medication["requires_prescription"]
+    ]
 
 
 def find_medication(sku: str) -> Optional[dict]:
