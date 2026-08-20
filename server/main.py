@@ -1,11 +1,11 @@
 """
-Entry point: wires the stdio transport to the MCP protocol core.
+Punto de entrada: conecta el transporte stdio con el nucleo de MCP.
 
-Run it directly for manual testing:
+Ejecutalo directamente para pruebas manuales:
 
     python -m server.main
 
-then paste a JSON-RPC message and press Enter.
+luego pega un mensaje JSON-RPC y presiona Enter.
 """
 
 from . import jsonrpc

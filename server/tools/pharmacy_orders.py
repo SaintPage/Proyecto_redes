@@ -1,14 +1,15 @@
 """
-Pharmacy domain tools (part 3): order creation and status.
+Tools de dominio de farmacia (parte 3): creacion y consulta de pedidos.
 
-create_order validates the requested items against the catalog and the
-branch inventory, computes the total in GTQ, decrements stock and
-persists the order to data/orders.json so its state survives across
-calls. get_order_status reads that persisted state back.
+create_order valida los articulos solicitados contra el catalogo y el
+inventario de la sucursal, calcula el total en GTQ, decrementa las
+existencias y persiste el pedido en data/orders.json para que su estado
+sobreviva entre llamadas. get_order_status lee ese estado persistido.
 
-Prescription products are rejected here on purpose: an automated channel
-should not dispense them without a verified prescription. This mirrors a
-real constraint and gives the chatbot a clear rule to explain.
+Los productos con receta se rechazan aqui a proposito: un canal
+automatizado no deberia despachar medicamentos controlados sin una
+receta verificada. Esto refleja una restriccion real y le da al chatbot
+una regla clara que explicar.
 """
 
 import datetime
@@ -78,9 +79,9 @@ def create_order(branch_id: str, customer_name: str, items: list) -> str:
     inventory = db.get_inventory()
     currency = inventory.get("currency", "GTQ")
 
-    # --- Validate everything BEFORE mutating any stock ----------------
-    # This keeps the operation atomic: either the whole order is valid
-    # and applied, or nothing changes.
+    # --- Validar todo ANTES de modificar cualquier existencia ----------
+    # Esto mantiene la operacion atomica: o el pedido completo es
+    # valido y se aplica, o no cambia nada.
     validated: list[dict[str, Any]] = []
     for entry in items:
         if not isinstance(entry, dict):
@@ -120,7 +121,7 @@ def create_order(branch_id: str, customer_name: str, items: list) -> str:
             }
         )
 
-    # --- Apply: decrement stock and build the order line items --------
+    # --- Aplicar: decrementar existencias y armar las lineas del pedido --
     line_items = []
     total = 0.0
     for item in validated:

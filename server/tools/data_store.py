@@ -1,12 +1,13 @@
 """
-Data access layer for the pharmacy MCP server.
+Capa de acceso a datos para el servidor MCP de farmacia.
 
-Loads the fictional catalog and inventory from JSON files and keeps them
-in memory. Orders are persisted back to disk so their state survives
-between tool calls (and between sessions), which is what makes
-`get_order_status` meaningful.
+Carga el catalogo e inventario ficticios desde archivos JSON y los
+mantiene en memoria. Los pedidos se persisten a disco para que su
+estado sobreviva entre llamadas a tools (y entre sesiones), que es lo
+que le da sentido a `get_order_status`.
 
-Keeping file I/O here means the tool functions stay small and readable.
+Mantener el I/O de archivos aqui deja las funciones de las tools
+pequenas y legibles.
 """
 
 import json
@@ -24,8 +25,8 @@ INVENTORY_PATH = os.path.join(DATA_DIR, "inventory.json")
 ORDERS_PATH = os.path.join(DATA_DIR, "orders.json")
 SYMPTOM_MAP_PATH = os.path.join(DATA_DIR, "symptom_map.json")
 
-# Orders are written from tool calls; a lock avoids a corrupted file if
-# two calls ever overlap.
+# Los pedidos se escriben desde llamadas a tools; un lock evita que el
+# archivo se corrompa si alguna vez dos llamadas se superponen.
 _orders_lock = threading.Lock()
 
 _catalog: Optional[dict] = None
@@ -39,7 +40,7 @@ def _load(path: str) -> dict:
 
 
 def get_catalog() -> dict:
-    """Return the catalog, loading it from disk on first use."""
+    """Retorna el catalogo, cargandolo de disco la primera vez que se usa."""
     global _catalog
     if _catalog is None:
         _catalog = _load(CATALOG_PATH)
@@ -47,7 +48,7 @@ def get_catalog() -> dict:
 
 
 def get_inventory() -> dict:
-    """Return the inventory, loading it from disk on first use."""
+    """Retorna el inventario, cargandolo de disco la primera vez que se usa."""
     global _inventory
     if _inventory is None:
         _inventory = _load(INVENTORY_PATH)
@@ -55,7 +56,7 @@ def get_inventory() -> dict:
 
 
 def get_symptom_map() -> dict:
-    """Return the symptom-to-category map, loading it on first use."""
+    """Retorna el mapa de sintomas a categorias, cargandolo la primera vez."""
     global _symptom_map
     if _symptom_map is None:
         _symptom_map = _load(SYMPTOM_MAP_PATH)
@@ -67,7 +68,7 @@ def get_medications() -> list[dict]:
 
 
 def medications_in_category(category: str) -> list[dict]:
-    """Return all OTC medications belonging to a category."""
+    """Retorna todos los medicamentos de venta libre de una categoria."""
     return [
         medication
         for medication in get_medications()
@@ -77,7 +78,7 @@ def medications_in_category(category: str) -> list[dict]:
 
 
 def find_medication(sku: str) -> Optional[dict]:
-    """Look up a medication by SKU (case-insensitive)."""
+    """Busca un medicamento por SKU (sin distinguir mayusculas/minusculas)."""
     sku = sku.strip().upper()
     for medication in get_medications():
         if medication["sku"].upper() == sku:
@@ -98,21 +99,21 @@ def find_branch(branch_id: str) -> Optional[dict]:
 
 
 def get_stock(sku: str) -> dict[str, dict]:
-    """Return {branch_id: {units, price}} for one SKU."""
+    """Retorna {branch_id: {units, price}} para un SKU."""
     return get_inventory()["stock"].get(sku.strip().upper(), {})
 
 
-# --- Orders ------------------------------------------------------------
+# --- Pedidos ------------------------------------------------------------
 
 
 def load_orders() -> dict:
-    """Return the orders file, creating an empty one if missing."""
+    """Retorna el archivo de pedidos, creando uno vacio si no existe."""
     if not os.path.exists(ORDERS_PATH):
         return {"next_id": 1, "orders": {}}
     try:
         return _load(ORDERS_PATH)
     except (json.JSONDecodeError, OSError):
-        # A corrupted file should not take the whole server down.
+        # Un archivo corrupto no debe tumbar todo el servidor.
         return {"next_id": 1, "orders": {}}
 
 
@@ -128,9 +129,10 @@ def orders_lock() -> threading.Lock:
 
 def as_json(payload: Any) -> str:
     """
-    Serialize a tool result.
+    Serializa el resultado de una tool.
 
-    Tools return text content, and returning JSON keeps the output
-    unambiguous for the LLM and readable in the interaction log.
+    Las tools retornan contenido de texto, y retornar JSON mantiene la
+    salida sin ambiguedad para el LLM y legible en el log de
+    interacciones.
     """
     return json.dumps(payload, indent=2, ensure_ascii=False)

@@ -1,16 +1,16 @@
 """
-stdio transport for MCP.
+Transporte stdio para MCP.
 
-MCP over stdio uses newline-delimited JSON: every message is a single
-JSON object written on one line, terminated by "\\n". Messages MUST NOT
-contain embedded newlines.
+MCP sobre stdio utiliza JSON delimitado por saltos de linea: cada
+mensaje es un objeto JSON en una sola linea, terminado por "\\n". Los
+mensajes NO deben contener saltos de linea embebidos.
 
-IMPORTANT: stdout is a protocol channel. Anything printed there that is
-not a valid JSON-RPC message will corrupt the stream and break the client.
-All diagnostics go to stderr instead (see logger.py).
+IMPORTANTE: stdout es un canal de protocolo. Cualquier cosa impresa ahi
+que no sea un mensaje JSON-RPC valido corrompe el stream y rompe al
+cliente. Todo el diagnostico va a stderr en su lugar (ver logger.py).
 
-This class is intentionally small so that Part 2 of the project can swap
-it for an HTTP transport without touching the protocol logic.
+Esta clase es intencionalmente pequena para que la Parte 2 del proyecto
+pueda cambiarla por un transporte HTTP sin tocar la logica de protocolo.
 """
 
 import json
@@ -19,7 +19,7 @@ from typing import Iterator, Optional
 
 
 class StdioTransport:
-    """Reads and writes newline-delimited JSON over stdin/stdout."""
+    """Lee y escribe JSON delimitado por saltos de linea sobre stdin/stdout."""
 
     def __init__(self, stdin=None, stdout=None) -> None:
         self._stdin = stdin or sys.stdin
@@ -27,11 +27,11 @@ class StdioTransport:
 
     def receive(self) -> Iterator[tuple[Optional[dict], Optional[str]]]:
         """
-        Yield (message, error) pairs, one per incoming line.
+        Genera pares (mensaje, error), uno por cada linea entrante.
 
-        If a line is not valid JSON, `message` is None and `error` holds
-        the reason, so the caller can answer with a -32700 Parse error.
-        Blank lines are ignored.
+        Si una linea no es JSON valido, `message` es None y `error`
+        contiene la razon, para que quien llama pueda responder con un
+        error -32700 (Parse error). Las lineas en blanco se ignoran.
         """
         for line in self._stdin:
             line = line.strip()
@@ -43,9 +43,9 @@ class StdioTransport:
                 yield None, str(exc)
 
     def send(self, message: dict) -> None:
-        """Serialize and write one message, then flush immediately."""
-        # separators without spaces keeps the frame compact;
-        # ensure_ascii=False lets us send accents without escaping.
+        """Serializa y escribe un mensaje, luego hace flush de inmediato."""
+        # separators sin espacios mantiene el frame compacto;
+        # ensure_ascii=False permite enviar acentos sin escaparlos.
         data = json.dumps(message, separators=(",", ":"), ensure_ascii=False)
         self._stdout.write(data + "\n")
-        self._stdout.flush()  # without this the client hangs waiting
+        self._stdout.flush()  # sin esto el cliente se queda esperando

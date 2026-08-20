@@ -1,12 +1,14 @@
 """
-Pharmacy domain tools (part 1): catalog search and inventory lookup.
+Tools de dominio de farmacia (parte 1): busqueda en catalogo y consulta
+de inventario.
 
-Industry use case: a pharmacy chain exposes its catalog, stock and
-ordering system to a chatbot so customers can find products, check
-availability per branch and place orders.
+Caso de uso de industria: una cadena de farmacias expone su catalogo,
+existencias y sistema de pedidos a un chatbot para que los clientes
+puedan buscar productos, revisar disponibilidad por sucursal y hacer
+pedidos.
 
-All data is fictional and lives under data/. Nothing here provides
-medical advice: the tools describe products, they do not diagnose.
+Todos los datos son ficticios y viven bajo data/. Nada aqui da consejo
+medico: las tools describen productos, no diagnostican.
 """
 
 from typing import Optional

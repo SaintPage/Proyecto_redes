@@ -1,12 +1,12 @@
 """
-Logging helper.
+Utilidad de logging.
 
-Every log record goes to stderr and to logs/server.log, NEVER to stdout,
-because stdout carries the JSON-RPC frames.
+Cada registro de log va a stderr y a logs/server.log, NUNCA a stdout,
+porque stdout transporta los frames de JSON-RPC.
 
-The chatbot host has its own separate log for requirement 3 (showing all
-interactions with MCP servers); this one is the server-side view, which
-is very useful when debugging the handshake.
+El chatbot anfitrion tiene su propio log separado para el requisito 3
+(mostrar todas las interacciones con los servidores MCP); este es la
+vista del lado del servidor, muy util para depurar el handshake.
 """
 
 import logging
@@ -17,9 +17,9 @@ LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "logs")
 
 
 def get_logger(name: str = "mcp-server") -> logging.Logger:
-    """Return a logger writing to stderr and to logs/server.log."""
+    """Retorna un logger que escribe a stderr y a logs/server.log."""
     logger = logging.getLogger(name)
-    if logger.handlers:  # already configured
+    if logger.handlers:  # ya esta configurado
         return logger
 
     logger.setLevel(logging.DEBUG)
@@ -40,7 +40,8 @@ def get_logger(name: str = "mcp-server") -> logging.Logger:
         file_handler.setFormatter(fmt)
         logger.addHandler(file_handler)
     except OSError:
-        # If the log file cannot be opened we still keep stderr logging.
+        # Si no se puede abrir el archivo de log, igual mantenemos el
+        # logging por stderr.
         pass
 
     return logger

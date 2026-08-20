@@ -1,17 +1,21 @@
 """
-Pharmacy domain tools (part 2): symptom-based suggestions.
+Tools de dominio de farmacia (parte 2): sugerencias basadas en sintomas.
 
-This tool maps a described symptom to categories of over-the-counter
-products from the fictional catalog. It is deliberately conservative:
+Esta tool relaciona un sintoma descrito en lenguaje natural con
+categorias de productos de venta libre del catalogo ficticio. Es
+deliberadamente conservadora:
 
-  * If the text matches a red-flag symptom (chest pain, trouble
-    breathing, pregnancy, infants, etc.), it returns NO product and
-    tells the user to seek professional medical care instead.
-  * Otherwise it returns OTC product categories, always paired with a
-    reminder to consult the pharmacist.
+  * Si el texto coincide con un sintoma de alarma (dolor en el pecho,
+    dificultad para respirar, embarazo, sintomas en bebes, etc.), NO
+    retorna ningun producto y le indica al usuario que busque atencion
+    medica profesional.
+  * En cualquier otro caso retorna categorias de productos de venta
+    libre, siempre acompanadas de un recordatorio de consultar al
+    farmaceutico.
 
-The server never diagnoses. It suggests catalog categories and knows
-when to step back, which is the honest behaviour for a data service.
+El servidor nunca diagnostica. Sugiere categorias del catalogo y sabe
+cuando dar un paso atras, que es el comportamiento honesto para un
+servicio de datos.
 """
 
 from typing import Optional
@@ -33,7 +37,7 @@ REFERRAL = (
 
 
 def _matches_red_flag(text: str) -> Optional[str]:
-    """Return the first red-flag phrase present in `text`, if any."""
+    """Retorna la primera frase de alarma presente en `text`, si existe."""
     lowered = text.lower()
     for phrase in db.get_symptom_map().get("red_flags", []):
         if phrase in lowered:
@@ -78,7 +82,8 @@ def suggest_products_for_symptom(symptom: str, max_products: int = 3) -> str:
     if max_products < 1 or max_products > 10:
         raise ValueError("max_products must be between 1 and 10")
 
-    # Safety first: a red flag short-circuits any product suggestion.
+    # Seguridad primero: un sintoma de alarma corta cualquier sugerencia
+    # de producto.
     red_flag = _matches_red_flag(symptom)
     if red_flag:
         return db.as_json(
@@ -93,8 +98,9 @@ def suggest_products_for_symptom(symptom: str, max_products: int = 3) -> str:
 
     symptom_map = db.get_symptom_map().get("otc_symptoms", {})
 
-    # Match known symptoms as substrings so small phrasing differences
-    # ("tengo tos", "tos seca") still map to the same category.
+    # Los sintomas conocidos se buscan como subcadenas para que
+    # pequenas variaciones de redaccion ("tengo tos", "tos seca") sigan
+    # mapeando a la misma categoria.
     lowered = symptom.lower()
     matched_categories: list[str] = []
     for known, categories in symptom_map.items():

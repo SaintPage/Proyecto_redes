@@ -1,20 +1,21 @@
 """
-MCP protocol core.
+Nucleo del protocolo MCP.
 
-Implements the server side of the Model Context Protocol manually on top
-of JSON-RPC 2.0, without FastMCP or any MCP SDK, as required by the
-project statement.
+Implementa el lado servidor del Model Context Protocol a mano sobre
+JSON-RPC 2.0, sin FastMCP ni ningun SDK de MCP, tal como lo exige el
+enunciado del proyecto.
 
-Lifecycle handled here:
+Ciclo de vida manejado aqui:
 
-    client -> initialize                  (request)
-    server -> InitializeResult            (response)
-    client -> notifications/initialized   (notification, no reply)
-    client -> tools/list                  (request)
-    client -> tools/call                  (request)
+    cliente -> initialize                  (request)
+    servidor -> InitializeResult           (response)
+    cliente -> notifications/initialized   (notification, sin respuesta)
+    cliente -> tools/list                  (request)
+    cliente -> tools/call                  (request)
 
-This class is transport-agnostic: it takes a decoded message and returns
-the message to send back (or None for notifications).
+Esta clase es independiente del transporte: recibe un mensaje ya
+decodificado y retorna el mensaje que se debe enviar de vuelta (o None
+para las notificaciones).
 """
 
 from typing import Any, Optional
@@ -23,9 +24,9 @@ from . import jsonrpc
 from .logger import get_logger
 from .tools import registry
 
-# Protocol revision this server implements. If the client asks for a
-# version we know, we echo it back; otherwise we answer with ours and let
-# the client decide whether it can continue.
+# Revision de protocolo que implementa este servidor. Si el cliente pide
+# una version que conocemos, se la devolvemos tal cual; si no, respondemos
+# con la nuestra y dejamos que el cliente decida si puede continuar.
 PROTOCOL_VERSION = "2025-06-18"
 SUPPORTED_VERSIONS = {"2024-11-05", "2025-03-26", "2025-06-18", "2025-11-25"}
 
@@ -35,7 +36,7 @@ log = get_logger()
 
 
 class MCPServer:
-    """Dispatches MCP methods and produces JSON-RPC responses."""
+    """Despacha metodos de MCP y produce respuestas de JSON-RPC."""
 
     def __init__(self) -> None:
         self.initialized = False
@@ -46,14 +47,14 @@ class MCPServer:
             "ping": self._handle_ping,
         }
 
-    # -- entry point ----------------------------------------------------
+    # -- punto de entrada -------------------------------------------------
 
     def handle_message(self, message: Any) -> Optional[dict]:
         """
-        Process one incoming message.
+        Procesa un mensaje entrante.
 
-        Returns the response object, or None when nothing must be sent
-        back (notifications).
+        Retorna el objeto de respuesta, o None cuando no hay que enviar
+        nada de vuelta (notificaciones).
         """
         reason = jsonrpc.validate_request(message)
         if reason:
@@ -84,23 +85,23 @@ class MCPServer:
 
         try:
             return handler(request_id, params)
-        except Exception as exc:  # never let the server die on one message
+        except Exception as exc:  # nunca dejar morir al servidor por un mensaje
             log.exception("Unhandled error in %s", method)
             return jsonrpc.make_error(
                 request_id, jsonrpc.INTERNAL_ERROR, "Internal error", str(exc)
             )
 
-    # -- notifications --------------------------------------------------
+    # -- notificaciones -----------------------------------------------------
 
     def _handle_notification(self, method: str, params: dict) -> None:
         if method == "notifications/initialized":
-            # The client confirms the handshake is complete.
+            # El cliente confirma que el handshake esta completo.
             self.initialized = True
             log.info("Handshake complete, server ready")
-        # Unknown notifications are ignored on purpose: the spec forbids
-        # answering them, even with an error.
+        # Las notificaciones desconocidas se ignoran a proposito: la
+        # especificacion prohibe responderlas, incluso con un error.
 
-    # -- request handlers -----------------------------------------------
+    # -- manejadores de requests ---------------------------------------------
 
     def _handle_initialize(self, request_id: Any, params: dict) -> dict:
         requested = params.get("protocolVersion")
@@ -112,8 +113,9 @@ class MCPServer:
             request_id,
             {
                 "protocolVersion": negotiated,
-                # Declaring the "tools" capability tells the client it can
-                # call tools/list. Empty object = no optional sub-features.
+                # Declarar la capacidad "tools" le indica al cliente que
+                # puede llamar a tools/list. Objeto vacio = sin
+                # sub-caracteristicas opcionales.
                 "capabilities": {"tools": {}},
                 "serverInfo": SERVER_INFO,
             },
@@ -151,9 +153,10 @@ class MCPServer:
         try:
             result = entry["handler"](**arguments)
         except Exception as exc:
-            # Tool execution failures are NOT protocol errors: they are
-            # returned inside the result with isError=true so the LLM can
-            # read the message and react (retry, ask the user, etc.).
+            # Los fallos de ejecucion de la tool NO son errores de
+            # protocolo: se retornan dentro del resultado con
+            # isError=true para que el LLM pueda leer el mensaje y
+            # reaccionar (reintentar, preguntar al usuario, etc.).
             log.error("Tool '%s' failed: %s", name, exc)
             return jsonrpc.make_response(
                 request_id,
