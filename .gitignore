@@ -6,3 +6,4 @@ venv/
 logs/*.log
 .DS_Store
 data/orders.json
+logs/*.jsonl
