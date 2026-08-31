@@ -56,3 +56,63 @@
 17:32:06 [INFO] mcp-server: <- request #4: does/not/exist
 17:32:06 [INFO] mcp-server: <- request #5: tools/call
 17:32:06 [INFO] mcp-server: stdin closed, shutting down
+09:54:00 [INFO] mcp-server: MCP server started (stdio transport)
+09:54:00 [INFO] mcp-server: <- request #1: initialize
+09:54:00 [INFO] mcp-server: Client: pharmacy-chatbot, protocol: 2025-06-18
+09:54:00 [INFO] mcp-server: <- notification: notifications/initialized
+09:54:00 [INFO] mcp-server: Handshake complete, server ready
+09:54:00 [INFO] mcp-server: <- request #2: tools/list
+09:54:00 [INFO] mcp-server: -> tools/list: 5 tool(s)
+09:54:00 [INFO] mcp-server: <- request #3: tools/call
+09:54:00 [INFO] mcp-server: -> tools/call 'search_medications' ok
+09:54:00 [INFO] mcp-server: <- request #4: tools/call
+09:54:00 [INFO] mcp-server: -> tools/call 'suggest_products_for_symptom' ok
+09:54:00 [INFO] mcp-server: <- request #5: tools/call
+09:54:00 [ERROR] mcp-server: Tool 'get_order_status' failed: Order 'ORD-99999' not found.
+09:54:00 [INFO] mcp-server: <- request #6: tools/call
+09:54:00 [INFO] mcp-server: stdin closed, shutting down
+09:59:09 [INFO] mcp-server: MCP server started (stdio transport)
+09:59:09 [INFO] mcp-server: <- request #1: initialize
+09:59:09 [INFO] mcp-server: Client: pharmacy-chatbot, protocol: 2025-06-18
+09:59:09 [INFO] mcp-server: <- notification: notifications/initialized
+09:59:09 [INFO] mcp-server: Handshake complete, server ready
+09:59:09 [INFO] mcp-server: <- request #2: tools/list
+09:59:09 [INFO] mcp-server: -> tools/list: 5 tool(s)
+10:02:21 [INFO] mcp-server: MCP server started (stdio transport)
+10:02:21 [INFO] mcp-server: <- request #1: initialize
+10:02:21 [INFO] mcp-server: Client: pharmacy-chatbot, protocol: 2025-06-18
+10:02:21 [INFO] mcp-server: <- notification: notifications/initialized
+10:02:21 [INFO] mcp-server: Handshake complete, server ready
+10:02:21 [INFO] mcp-server: <- request #2: tools/list
+10:02:21 [INFO] mcp-server: -> tools/list: 5 tool(s)
+10:19:38 [INFO] mcp-server: MCP server started (stdio transport)
+10:19:38 [INFO] mcp-server: <- request #1: initialize
+10:19:38 [INFO] mcp-server: Client: pharmacy-chatbot, protocol: 2025-06-18
+10:19:38 [INFO] mcp-server: <- notification: notifications/initialized
+10:19:38 [INFO] mcp-server: Handshake complete, server ready
+10:19:38 [INFO] mcp-server: <- request #2: tools/list
+10:19:38 [INFO] mcp-server: -> tools/list: 5 tool(s)
+10:23:31 [INFO] mcp-server: <- request #3: tools/call
+10:23:31 [INFO] mcp-server: -> tools/call 'search_medications' ok
+10:23:32 [INFO] mcp-server: <- request #4: tools/call
+10:23:32 [INFO] mcp-server: -> tools/call 'check_inventory' ok
+10:27:00 [INFO] mcp-server: MCP server started (stdio transport)
+10:27:00 [INFO] mcp-server: <- request #1: initialize
+10:27:00 [INFO] mcp-server: Client: pharmacy-chatbot, protocol: 2025-06-18
+10:27:00 [INFO] mcp-server: <- notification: notifications/initialized
+10:27:00 [INFO] mcp-server: Handshake complete, server ready
+10:27:00 [INFO] mcp-server: <- request #2: tools/list
+10:27:00 [INFO] mcp-server: -> tools/list: 5 tool(s)
+10:28:23 [INFO] mcp-server: <- request #3: tools/call
+10:28:23 [INFO] mcp-server: -> tools/call 'search_medications' ok
+10:28:25 [INFO] mcp-server: <- request #4: tools/call
+10:28:25 [INFO] mcp-server: -> tools/call 'check_inventory' ok
+10:28:41 [INFO] mcp-server: <- request #5: tools/call
+10:28:41 [INFO] mcp-server: -> tools/call 'suggest_products_for_symptom' ok
+10:31:13 [INFO] mcp-server: MCP server started (stdio transport)
+10:31:13 [INFO] mcp-server: <- request #1: initialize
+10:31:13 [INFO] mcp-server: Client: pharmacy-chatbot, protocol: 2025-06-18
+10:31:13 [INFO] mcp-server: <- notification: notifications/initialized
+10:31:13 [INFO] mcp-server: Handshake complete, server ready
+10:31:13 [INFO] mcp-server: <- request #2: tools/list
+10:31:13 [INFO] mcp-server: -> tools/list: 5 tool(s)

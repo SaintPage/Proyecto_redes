@@ -25,9 +25,14 @@ import sys
 import traceback
 
 from .conversation import Conversation
-from .llm_client import LLMClient, mcp_tools_to_gemini
+from .llm_client import LLMClient, LLMUnavailableError, mcp_tools_to_gemini
 from .mcp_client import MCPClient, MCPClientError
 from .mcp_log import MCPLog
+
+try:
+    from google.genai import errors as genai_errors
+except ImportError:  # pragma: no cover
+    genai_errors = None
 
 BOLD = "\033[1m"
 CYAN = "\033[36m"
@@ -39,6 +44,10 @@ RESET = "\033[0m"
 # Numero maximo de rondas de herramientas por turno, para evitar que un
 # bucle de tool calls se quede dando vueltas indefinidamente.
 MAX_TOOL_ROUNDS = 6
+
+# Con --debug se muestra el traceback completo de los errores. Sin el,
+# solo el mensaje, que es lo apropiado durante una demostracion.
+DEBUG = "--debug" in sys.argv
 
 # Servidores MCP que el anfitrion levanta al iniciar. Mas adelante se
 # agregaran aqui los servidores oficiales de Filesystem y Git.
@@ -66,6 +75,17 @@ def build_tool_index(clients: dict) -> tuple[list, dict]:
     return declarations, routing
 
 
+def notify_retry(attempt: int, total: int, delay: float, status) -> None:
+    """Avisa en consola que el servicio fallo y se va a reintentar."""
+    reason = {
+        429: "cuota por minuto excedida",
+        500: "error interno del proveedor",
+        503: "el modelo esta saturado",
+    }.get(status, f"error {status}")
+    print(f"{YELLOW}  ({reason}; reintento {attempt}/{total - 1} "
+          f"en {delay:.0f}s...){RESET}")
+
+
 def extract_parts(response) -> list:
     """Obtiene los bloques de la respuesta, tolerando respuestas vacias."""
     if not getattr(response, "candidates", None):
@@ -87,7 +107,11 @@ def run_turn(llm: LLMClient, conv: Conversation, declarations: list,
     con texto final.
     """
     for _ in range(MAX_TOOL_ROUNDS):
+        # Cada turno con herramientas implica al menos dos llamadas a la
+        # API, asi que conviene avisar que se esta trabajando.
+        print(f"{YELLOW}  (pensando...){RESET}", end="\r", flush=True)
         response = llm.send(conv.contents, declarations)
+        print(" " * 20, end="\r")  # borra el indicador
         parts = extract_parts(response)
 
         if not parts:
@@ -166,7 +190,7 @@ def main() -> int:
 
     # --- conectar el LLM ----------------------------------------------
     try:
-        llm = LLMClient()
+        llm = LLMClient(on_retry=notify_retry)
     except RuntimeError as exc:
         print(f"\n{RED}{exc}{RESET}")
         for client in clients.values():
@@ -180,11 +204,10 @@ def main() -> int:
 
     print(f"\n{CYAN}Listo. Escribi tu mensaje, o /tools /log /reset /salir{RESET}\n")
 
-    # --- bucle de conversacion ----------------------------------------
     try:
         while True:
             try:
-                user_input = input(f"{BOLD}Vos:{RESET} ").strip()
+                user_input = input(f"{BOLD}Cliente:{RESET} ").strip()
             except (EOFError, KeyboardInterrupt):
                 print()
                 break
@@ -215,9 +238,20 @@ def main() -> int:
             conv.add_user(user_input)
             try:
                 run_turn(llm, conv, declarations, routing)
+            except LLMUnavailableError as exc:
+                print(f"\n{RED}{exc}{RESET}")
+                print(f"{YELLOW}Proba de nuevo en un momento, o cambia de "
+                      f"modelo con GEMINI_MODEL.{RESET}\n")
             except Exception as exc:  # noqa: BLE001
-                print(f"\n{RED}Error en el turno: {exc}{RESET}\n")
-                traceback.print_exc(file=sys.stderr)
+                # Los errores de la API traen un mensaje util; el
+                # traceback completo solo se muestra con --debug.
+                if genai_errors and isinstance(exc, genai_errors.APIError):
+                    print(f"\n{RED}Error de la API ({getattr(exc, 'code', '?')}): "
+                          f"{getattr(exc, 'message', exc)}{RESET}\n")
+                else:
+                    print(f"\n{RED}Error en el turno: {exc}{RESET}\n")
+                if DEBUG:
+                    traceback.print_exc(file=sys.stderr)
 
     finally:
         print(f"\n{CYAN}{log.summary()}{RESET}")

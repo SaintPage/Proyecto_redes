@@ -18,14 +18,30 @@ es casi directa.
 
 import os
 import sys
+import time
 
 try:
     from google import genai
     from google.genai import types
+    from google.genai import errors as genai_errors
 except ImportError:  # pragma: no cover
     print("Falta el paquete 'google-genai'. Instalalo con:\n"
           "    pip install google-genai", file=sys.stderr)
     raise
+
+
+class LLMUnavailableError(Exception):
+    """El modelo no respondio despues de agotar los reintentos."""
+
+
+# Codigos HTTP que vale la pena reintentar: son fallos transitorios del
+# servicio, no errores de nuestra peticion.
+#   429 -> se excedio la cuota por minuto
+#   500 -> error interno del proveedor
+#   503 -> el modelo esta saturado de demanda
+RETRYABLE_STATUS = {429, 500, 503}
+MAX_ATTEMPTS = 4
+BASE_DELAY = 2.0  # segundos; se duplica en cada reintento
 
 # Modelo por defecto. La familia Flash es la que cubre el nivel
 # gratuito de la API de Gemini. Se puede cambiar con la variable de
@@ -77,7 +93,13 @@ def mcp_tools_to_gemini(tools: list[dict], prefix: str) -> list:
 class LLMClient:
     """Envoltura minima sobre la API de Gemini."""
 
-    def __init__(self, model: str = "", system_prompt: str = SYSTEM_PROMPT) -> None:
+    def __init__(self, model: str = "", system_prompt: str = SYSTEM_PROMPT,
+                 on_retry=None) -> None:
+        """
+        `on_retry` es un callback opcional que se invoca antes de cada
+        reintento, para que la interfaz pueda avisarle al usuario que
+        se esta esperando en vez de quedarse muda.
+        """
         api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
         if not api_key:
             raise RuntimeError(
@@ -90,6 +112,7 @@ class LLMClient:
         self.client = genai.Client(api_key=api_key)
         self.model = model or os.environ.get("GEMINI_MODEL", DEFAULT_MODEL)
         self.system_prompt = system_prompt
+        self.on_retry = on_retry
 
     def send(self, contents: list, declarations: list):
         """
@@ -103,6 +126,11 @@ class LLMClient:
         queremos ejecutar las tools nosotros, pasando por el cliente
         MCP, para que cada interaccion quede registrada en el log
         (funcionalidad 3).
+
+        Los fallos transitorios del servicio (429, 500, 503) se
+        reintentan con espera exponencial. Un servicio compartido puede
+        saturarse en cualquier momento, asi que el cliente no debe
+        asumir que cada llamada va a funcionar a la primera.
         """
         config_args = {
             "system_instruction": self.system_prompt,
@@ -113,8 +141,26 @@ class LLMClient:
         if declarations:
             config_args["tools"] = [types.Tool(function_declarations=declarations)]
 
-        return self.client.models.generate_content(
-            model=self.model,
-            contents=contents,
-            config=types.GenerateContentConfig(**config_args),
+        config = types.GenerateContentConfig(**config_args)
+        last_error: Exception | None = None
+
+        for attempt in range(1, MAX_ATTEMPTS + 1):
+            try:
+                return self.client.models.generate_content(
+                    model=self.model,
+                    contents=contents,
+                    config=config,
+                )
+            except genai_errors.APIError as exc:
+                status = getattr(exc, "code", None)
+                if status not in RETRYABLE_STATUS or attempt == MAX_ATTEMPTS:
+                    raise
+                last_error = exc
+                delay = BASE_DELAY * (2 ** (attempt - 1))
+                if self.on_retry:
+                    self.on_retry(attempt, MAX_ATTEMPTS, delay, status)
+                time.sleep(delay)
+
+        raise LLMUnavailableError(
+            f"El modelo no respondio tras {MAX_ATTEMPTS} intentos: {last_error}"
         )

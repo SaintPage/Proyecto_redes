@@ -48,7 +48,7 @@ class MCPClient:
         self.tools: list[dict] = []
         self._next_id = 1
 
-    # -- ciclo de vida ---------------------------------------------------
+    # ciclo de vida 
 
     def start(self) -> None:
         """Lanza el servidor como subproceso y completa el handshake."""
