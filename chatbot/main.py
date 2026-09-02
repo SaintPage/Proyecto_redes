@@ -28,6 +28,7 @@ from .conversation import Conversation
 from .llm_client import LLMClient, LLMUnavailableError, mcp_tools_to_gemini
 from .mcp_client import MCPClient, MCPClientError
 from .mcp_log import MCPLog
+from .servers_config import DEMO_DIR, ensure_demo_repo, get_servers
 
 try:
     from google.genai import errors as genai_errors
@@ -48,12 +49,6 @@ MAX_TOOL_ROUNDS = 6
 # Con --debug se muestra el traceback completo de los errores. Sin el,
 # solo el mensaje, que es lo apropiado durante una demostracion.
 DEBUG = "--debug" in sys.argv
-
-# Servidores MCP que el anfitrion levanta al iniciar. Mas adelante se
-# agregaran aqui los servidores oficiales de Filesystem y Git.
-SERVERS = {
-    "pharmacy": [sys.executable, "-m", "server.main"],
-}
 
 
 def build_tool_index(clients: dict) -> tuple[list, dict]:
@@ -172,10 +167,17 @@ def main() -> int:
     clients: dict = {}
 
     print(f"{BOLD}Chatbot de farmacia — anfitrion MCP{RESET}")
+
+    # --- preparar el sandbox de la demostracion (funcionalidad 4) -----
+    ready, message = ensure_demo_repo()
+    print(f"{CYAN}Espacio de trabajo: {message}{RESET}")
+    if not ready:
+        print(f"{YELLOW}  Las herramientas de git podrian fallar.{RESET}")
+
     print(f"{CYAN}Conectando servidores MCP...{RESET}")
 
     # --- levantar los servidores MCP ---------------------------------
-    for name, command in SERVERS.items():
+    for name, command in get_servers().items():
         client = MCPClient(name, command, log)
         try:
             client.start()
@@ -183,6 +185,10 @@ def main() -> int:
             print(f"  {GREEN}OK{RESET} {name}: {len(client.tools)} herramientas")
         except (MCPClientError, OSError) as exc:
             print(f"  {RED}X{RESET} {name}: {exc}")
+            if name == "filesystem":
+                print(f"     {YELLOW}Requiere Node.js. Verifica con: node --version{RESET}")
+            elif name == "git":
+                print(f"     {YELLOW}Instalalo con: pip install mcp-server-git{RESET}")
 
     if not clients:
         print(f"{RED}No se pudo conectar ningun servidor MCP.{RESET}")
@@ -204,10 +210,11 @@ def main() -> int:
 
     print(f"\n{CYAN}Listo. Escribi tu mensaje, o /tools /log /reset /salir{RESET}\n")
 
+    # --- bucle de conversacion ----------------------------------------
     try:
         while True:
             try:
-                user_input = input(f"{BOLD}Cliente:{RESET} ").strip()
+                user_input = input(f"{BOLD}Vos:{RESET} ").strip()
             except (EOFError, KeyboardInterrupt):
                 print()
                 break
