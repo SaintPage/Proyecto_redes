@@ -27,8 +27,11 @@ import traceback
 from .conversation import Conversation
 from .llm_client import LLMClient, LLMUnavailableError, mcp_tools_to_gemini
 from .mcp_client import MCPClient, MCPClientError
+from .mcp_http_client import MCPHTTPClient
 from .mcp_log import MCPLog
-from .servers_config import DEMO_DIR, ensure_demo_repo, get_servers
+from .servers_config import (
+    DEMO_DIR, ensure_demo_repo, get_remote_servers, get_servers,
+)
 
 try:
     from google.genai import errors as genai_errors
@@ -168,7 +171,7 @@ def main() -> int:
 
     print(f"{BOLD}Chatbot de farmacia — anfitrion MCP{RESET}")
 
-    # --- preparar el sandbox de la demostracion (funcionalidad 4) -----
+    #  preparar el sandbox de la demostracion (funcionalidad 4) 
     ready, message = ensure_demo_repo()
     print(f"{CYAN}Espacio de trabajo: {message}{RESET}")
     if not ready:
@@ -176,8 +179,26 @@ def main() -> int:
 
     print(f"{CYAN}Conectando servidores MCP...{RESET}")
 
-    # --- levantar los servidores MCP ---------------------------------
+    #  servidores remotos, si estan configurados (funcionalidad 6) 
+    remote = get_remote_servers()
+    for name, url in remote.items():
+        client = MCPHTTPClient(name, url, log)
+        try:
+            client.start()
+            clients[name] = client
+            print(f"  {GREEN}OK{RESET} {name} (remoto): "
+                  f"{len(client.tools)} herramientas — {url}")
+        except MCPClientError as exc:
+            print(f"  {RED}X{RESET} {name} (remoto): {exc}")
+            print(f"     {YELLOW}Revisa MCP_REMOTE_URL o que el servidor "
+                  f"este desplegado.{RESET}")
+
+    #  servidores locales por stdio 
     for name, command in get_servers().items():
+        # Si este servidor ya se conecto de forma remota, no se
+        # levanta tambien en local: seria el mismo con dos nombres.
+        if name in clients:
+            continue
         client = MCPClient(name, command, log)
         try:
             client.start()
@@ -194,7 +215,7 @@ def main() -> int:
         print(f"{RED}No se pudo conectar ningun servidor MCP.{RESET}")
         return 1
 
-    # --- conectar el LLM ----------------------------------------------
+    #  conectar el LLM 
     try:
         llm = LLMClient(on_retry=notify_retry)
     except RuntimeError as exc:
@@ -210,7 +231,7 @@ def main() -> int:
 
     print(f"\n{CYAN}Listo. Escribi tu mensaje, o /tools /log /reset /salir{RESET}\n")
 
-    # --- bucle de conversacion ----------------------------------------
+    #  bucle de conversacion 
     try:
         while True:
             try:
@@ -247,7 +268,7 @@ def main() -> int:
                 run_turn(llm, conv, declarations, routing)
             except LLMUnavailableError as exc:
                 print(f"\n{RED}{exc}{RESET}")
-                print(f"{YELLOW}Prueba de nuevo en un momento, o cambia de "
+                print(f"{YELLOW}Proba de nuevo en un momento, o cambia de "
                       f"modelo con GEMINI_MODEL.{RESET}\n")
             except Exception as exc:  # noqa: BLE001
                 # Los errores de la API traen un mensaje util; el

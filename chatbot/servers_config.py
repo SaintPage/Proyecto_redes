@@ -84,7 +84,7 @@ def ensure_demo_repo() -> tuple[bool, str]:
 
 def get_servers() -> dict[str, list[str]]:
     """
-    Retorna el comando de arranque de cada servidor MCP.
+    Retorna el comando de arranque de cada servidor MCP por stdio.
 
     - pharmacy: modulo propio, se ejecuta con el mismo interprete.
     - filesystem: paquete de npm, se ejecuta con npx (requiere Node.js).
@@ -98,3 +98,26 @@ def get_servers() -> dict[str, list[str]]:
         ]),
         "git": [sys.executable, "-m", "mcp_server_git"],
     }
+
+
+def get_remote_servers() -> dict[str, str]:
+    """
+    Retorna los servidores MCP remotos, por URL (funcionalidad 6).
+
+    Se activan con la variable de entorno MCP_REMOTE_URL, que apunta a
+    la raiz del servidor desplegado, por ejemplo:
+
+        PowerShell:  $env:MCP_REMOTE_URL="https://mi-servidor.run.app"
+        Git Bash:    export MCP_REMOTE_URL="https://mi-servidor.run.app"
+
+    Para probar en local antes de desplegar, se levanta el servidor con
+    "python -m server.main_http" y se usa http://127.0.0.1:8080.
+
+    Cuando hay un servidor remoto configurado, el anfitrion lo usa EN
+    LUGAR del de farmacia local: son el mismo servidor, y tener ambos
+    duplicaria las herramientas.
+    """
+    url = os.environ.get("MCP_REMOTE_URL", "").strip()
+    if not url:
+        return {}
+    return {"pharmacy": url}
