@@ -116,3 +116,17 @@
 10:31:13 [INFO] mcp-server: Handshake complete, server ready
 10:31:13 [INFO] mcp-server: <- request #2: tools/list
 10:31:13 [INFO] mcp-server: -> tools/list: 5 tool(s)
+17:37:55 [INFO] mcp-server: MCP server started (stdio transport)
+17:37:55 [INFO] mcp-server: <- request #1: initialize
+17:37:55 [INFO] mcp-server: Client: pharmacy-chatbot, protocol: 2025-06-18
+17:37:55 [INFO] mcp-server: <- notification: notifications/initialized
+17:37:55 [INFO] mcp-server: Handshake complete, server ready
+17:37:55 [INFO] mcp-server: <- request #2: tools/list
+17:37:55 [INFO] mcp-server: -> tools/list: 5 tool(s)
+17:44:01 [INFO] mcp-server: MCP server started (stdio transport)
+17:44:01 [INFO] mcp-server: <- request #1: initialize
+17:44:01 [INFO] mcp-server: Client: pharmacy-chatbot, protocol: 2025-06-18
+17:44:01 [INFO] mcp-server: <- notification: notifications/initialized
+17:44:01 [INFO] mcp-server: Handshake complete, server ready
+17:44:01 [INFO] mcp-server: <- request #2: tools/list
+17:44:01 [INFO] mcp-server: -> tools/list: 5 tool(s)

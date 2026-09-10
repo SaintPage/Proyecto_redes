@@ -17,6 +17,7 @@ es casi directa.
 """
 
 import os
+import re
 import sys
 import time
 
@@ -36,18 +37,48 @@ class LLMUnavailableError(Exception):
 
 # Codigos HTTP que vale la pena reintentar: son fallos transitorios del
 # servicio, no errores de nuestra peticion.
-#   429 -> se excedio la cuota por minuto
+#   429 -> se excedio la cuota (por minuto o por dia)
 #   500 -> error interno del proveedor
 #   503 -> el modelo esta saturado de demanda
 RETRYABLE_STATUS = {429, 500, 503}
 MAX_ATTEMPTS = 4
-BASE_DELAY = 2.0  # segundos; se duplica en cada reintento
+BASE_DELAY = 2.0   # segundos; se duplica en cada reintento
+MAX_DELAY = 65.0   # tope de espera, para no colgar la sesion
+
+
+def suggested_delay(exc) -> float:
+    """
+    Obtiene el tiempo de espera que la propia API recomienda.
+
+    En los errores 429, Gemini indica cuanto falta para que se libere
+    la cuota, ya sea en el campo RetryInfo o en el texto del mensaje.
+    Respetarlo es mas eficaz que adivinar con un backoff fijo: si la
+    API pide 25 segundos, reintentar a los 2 solo gasta intentos.
+
+    Retorna 0.0 si no se encuentra ninguna sugerencia.
+    """
+    # 1) Campo estructurado RetryInfo, cuando viene.
+    details = getattr(exc, "details", None) or {}
+    if isinstance(details, dict):
+        for item in details.get("error", {}).get("details", []) or []:
+            delay = str(item.get("retryDelay", ""))
+            match = re.match(r"([\d.]+)s", delay)
+            if match:
+                return float(match.group(1))
+
+    # 2) Texto del mensaje: "Please retry in 24.89s".
+    message = str(getattr(exc, "message", "") or exc)
+    match = re.search(r"retry in ([\d.]+)s", message, re.IGNORECASE)
+    if match:
+        return float(match.group(1))
+
+    return 0.0
 
 # Modelo por defecto. La familia Flash es la que cubre el nivel
 # gratuito de la API de Gemini. Se puede cambiar con la variable de
 # entorno GEMINI_MODEL si el modelo por defecto no esta disponible
 # para tu llave (usa scripts/list_models.py para ver cuales tenes).
-DEFAULT_MODEL = "gemini-2.5-flash"
+DEFAULT_MODEL = "gemini-3.6-flash"
 
 SYSTEM_PROMPT = (
     "Eres el asistente de una cadena de farmacias en Guatemala, y "
@@ -165,7 +196,11 @@ class LLMClient:
                 if status not in RETRYABLE_STATUS or attempt == MAX_ATTEMPTS:
                     raise
                 last_error = exc
-                delay = BASE_DELAY * (2 ** (attempt - 1))
+                # Se respeta lo que pide la API; si no dice nada, se
+                # usa backoff exponencial. Se toma el mayor de ambos
+                # para no reintentar antes de tiempo.
+                backoff = BASE_DELAY * (2 ** (attempt - 1))
+                delay = min(max(backoff, suggested_delay(exc) + 1.0), MAX_DELAY)
                 if self.on_retry:
                     self.on_retry(attempt, MAX_ATTEMPTS, delay, status)
                 time.sleep(delay)

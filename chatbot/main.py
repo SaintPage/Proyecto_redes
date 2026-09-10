@@ -73,12 +73,12 @@ def build_tool_index(clients: dict) -> tuple[list, dict]:
 def notify_retry(attempt: int, total: int, delay: float, status) -> None:
     """Avisa en consola que el servicio fallo y se va a reintentar."""
     reason = {
-        429: "cuota por minuto excedida",
+        429: "cuota del nivel gratuito agotada",
         500: "error interno del proveedor",
         503: "el modelo esta saturado",
     }.get(status, f"error {status}")
-    print(f"{YELLOW}  ({reason}; reintento {attempt}/{total - 1} "
-          f"en {delay:.0f}s...){RESET}")
+    print(f"{YELLOW}  ({reason}; esperando {delay:.0f}s antes del "
+          f"reintento {attempt}/{total - 1}...){RESET}")
 
 
 def extract_parts(response) -> list:
@@ -214,7 +214,7 @@ def main() -> int:
     try:
         while True:
             try:
-                user_input = input(f"{BOLD}Vos:{RESET} ").strip()
+                user_input = input(f"{BOLD}Cliente:{RESET} ").strip()
             except (EOFError, KeyboardInterrupt):
                 print()
                 break
@@ -247,7 +247,7 @@ def main() -> int:
                 run_turn(llm, conv, declarations, routing)
             except LLMUnavailableError as exc:
                 print(f"\n{RED}{exc}{RESET}")
-                print(f"{YELLOW}Proba de nuevo en un momento, o cambia de "
+                print(f"{YELLOW}Prueba de nuevo en un momento, o cambia de "
                       f"modelo con GEMINI_MODEL.{RESET}\n")
             except Exception as exc:  # noqa: BLE001
                 # Los errores de la API traen un mensaje util; el
