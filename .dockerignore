@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.git/
+.gitignore
+chatbot/
+tests/
+scripts/
+docs/
+demo/
+logs/
+data/orders.json
+README.md
+requirements.txt
