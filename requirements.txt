@@ -1,8 +1,11 @@
-# El servidor MCP no tiene dependencias externas: el protocolo esta
-# implementado a mano sobre la libreria estandar de Python.
-#
-# El chatbot anfitrion si necesita el SDK oficial de Google para
-# hablar con la API del LLM. Ese SDK es el cliente HTTP del modelo, no
-# una implementacion de MCP, por lo que su uso no contradice la
-# restriccion del enunciado.
+# The MCP protocol itself is implemented by hand on top of the Python
+# standard library (no FastMCP, no MCP SDK), so the custom server has no
+# third-party dependencies.
+
+# Client for the LLM API used by the chatbot host (requirements 1-2).
+# It is the HTTP client of the model, not an MCP implementation.
 google-genai>=1.0.0
+
+# Official Git MCP server from Anthropic (requirement 4). The host
+# launches it as a separate process; the project code does not import it.
+mcp-server-git
