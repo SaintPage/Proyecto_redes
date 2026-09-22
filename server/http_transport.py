@@ -58,7 +58,7 @@ class MCPHTTPHandler(BaseHTTPRequestHandler):
     server_version = "custom-mcp-server/0.1.0"
     sys_version = ""
 
-    #  utilidades de respuesta 
+    # -- utilidades de respuesta ---------------------------------------
 
     def _send_json(self, payload: dict, status: int = 200,
                    session_id: Optional[str] = None) -> None:
@@ -80,7 +80,7 @@ class MCPHTTPHandler(BaseHTTPRequestHandler):
         """Redirige el log de acceso al logger del proyecto."""
         log.info("%s - %s", self.address_string(), format % args)
 
-    #  manejadores 
+    # -- manejadores ----------------------------------------------------
 
     def do_GET(self) -> None:
         if self.path in ("/health", "/"):
@@ -99,7 +99,7 @@ class MCPHTTPHandler(BaseHTTPRequestHandler):
             self._send_json({"error": "Not found"}, status=404)
             return
 
-        #  leer el cuerpo 
+        # --- leer el cuerpo -------------------------------------------
         try:
             length = int(self.headers.get("Content-Length", 0))
         except ValueError:
@@ -126,7 +126,7 @@ class MCPHTTPHandler(BaseHTTPRequestHandler):
             )
             return
 
-        #  resolver la sesion 
+        # --- resolver la sesion ---------------------------------------
         session_id = self.headers.get(SESSION_HEADER)
         is_initialize = (
             isinstance(message, dict) and message.get("method") == "initialize"
@@ -147,7 +147,7 @@ class MCPHTTPHandler(BaseHTTPRequestHandler):
 
         mcp = _sessions.get(session_id) if session_id else MCPServer()
 
-        #  despachar al nucleo del protocolo 
+        # --- despachar al nucleo del protocolo ------------------------
         response = mcp.handle_message(message)
 
         if response is None:
@@ -177,7 +177,7 @@ def serve(host: str = "0.0.0.0", port: Optional[int] = None) -> None:
     Arranca el servidor HTTP.
 
     El puerto se toma de la variable de entorno PORT cuando existe,
-    que es la convencion de las plataformas de nube (Cloud Run, Render,
+    que es la convencion de las plataformas de nube (AWS ECS, Cloud Run,
     etc.). Localmente cae en 8080.
     """
     if port is None:
