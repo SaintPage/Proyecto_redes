@@ -130,3 +130,32 @@
 17:44:01 [INFO] mcp-server: Handshake complete, server ready
 17:44:01 [INFO] mcp-server: <- request #2: tools/list
 17:44:01 [INFO] mcp-server: -> tools/list: 5 tool(s)
+11:57:41 [INFO] mcp-http: 127.0.0.1 - "GET /health HTTP/1.1" 200 -
+11:57:41 [INFO] mcp-http: Nueva sesion: b5c66a1bc61c4e08a7bf90b221eef8bf
+11:57:41 [INFO] mcp-server: <- request #1: initialize
+11:57:41 [INFO] mcp-server: Client: pharmacy-chatbot, protocol: 2025-06-18
+11:57:41 [INFO] mcp-http: 127.0.0.1 - "POST /mcp HTTP/1.1" 200 -
+11:57:41 [INFO] mcp-server: <- notification: notifications/initialized
+11:57:41 [INFO] mcp-server: Handshake complete, server ready
+11:57:41 [INFO] mcp-http: 127.0.0.1 - "POST /mcp HTTP/1.1" 202 -
+11:57:41 [INFO] mcp-server: <- request #2: tools/list
+11:57:41 [INFO] mcp-server: -> tools/list: 5 tool(s)
+11:57:41 [INFO] mcp-http: 127.0.0.1 - "POST /mcp HTTP/1.1" 200 -
+11:57:41 [INFO] mcp-server: <- request #3: tools/call
+11:57:41 [INFO] mcp-server: -> tools/call 'search_medications' ok
+11:57:41 [INFO] mcp-http: 127.0.0.1 - "POST /mcp HTTP/1.1" 200 -
+11:57:41 [INFO] mcp-server: <- request #4: tools/call
+11:57:41 [INFO] mcp-server: -> tools/call 'suggest_products_for_symptom' ok
+11:57:41 [INFO] mcp-http: 127.0.0.1 - "POST /mcp HTTP/1.1" 200 -
+11:57:41 [INFO] mcp-server: <- request #5: tools/call
+11:57:41 [ERROR] mcp-server: Tool 'get_order_status' failed: Order 'ORD-99999' not found.
+11:57:41 [INFO] mcp-http: 127.0.0.1 - "POST /mcp HTTP/1.1" 200 -
+11:57:41 [INFO] mcp-server: <- request #6: tools/call
+11:57:41 [INFO] mcp-http: 127.0.0.1 - "POST /mcp HTTP/1.1" 200 -
+11:57:41 [INFO] mcp-server: <- notification: notifications/initialized
+11:57:41 [INFO] mcp-server: Handshake complete, server ready
+11:57:41 [INFO] mcp-http: 127.0.0.1 - "POST /mcp HTTP/1.1" 202 -
+11:57:41 [INFO] mcp-http: 127.0.0.1 - "POST /mcp HTTP/1.1" 400 -
+11:57:41 [INFO] mcp-http: 127.0.0.1 - "GET /no-existe HTTP/1.1" 404 -
+11:57:41 [INFO] mcp-http: Sesion cerrada: b5c66a1bc61c4e08a7bf90b221eef8bf
+11:57:41 [INFO] mcp-http: 127.0.0.1 - "DELETE /mcp HTTP/1.1" 204 -
