@@ -103,51 +103,105 @@ On startup the host prints which one it used:
 OK pharmacy (remoto): 5 herramientas — https://your-service.run.app
 ```
 
-## 5. Deploying
+## 5. Deploying on AWS ECS Express Mode
 
-The repository includes a `Dockerfile`. The image carries only
-`server/` and `data/` — the chatbot, tests and docs stay out.
+The server runs on **Amazon ECS Express Mode**, which takes a container
+image and provisions the rest: a Fargate task, an Application Load
+Balancer with an HTTPS endpoint, health checks and auto scaling.
 
-### Google Cloud Run
+Two other platforms were tried first and ruled out:
 
-```bash
-gcloud run deploy pharmacy-mcp \
-  --source . \
-  --region us-central1 \
-  --allow-unauthenticated
-```
+- **Google Cloud Run** requires a one-time USD 30 prepayment for billing
+  accounts created in Guatemala.
+- **AWS App Runner** stopped accepting new customers on April 30, 2026.
 
-Cloud Run injects `PORT`; the server reads it. The command prints the
-public URL, which is what goes in `MCP_REMOTE_URL`.
+### 5.1 Build and push the image
 
-Note: Cloud Run has a free tier but requires a billing account on the
-project.
-
-### Other container platforms
-
-Any platform that runs a Dockerfile works the same way — Render,
-Fly.io, Railway. They all inject `PORT` and expect the process to listen
-on `0.0.0.0`, which this server already does.
-
-### Verifying a deployment
+Express Mode deploys from a container registry, not from source code, so
+the image is built locally and pushed to Amazon ECR:
 
 ```bash
-curl https://your-service.example.com/health
+# once: create the repository
+aws ecr create-repository --repository-name pharmacy-mcp --region us-east-2
+
+# authenticate Docker against ECR
+aws ecr get-login-password --region us-east-2 | docker login --username AWS \
+    --password-stdin <account-id>.dkr.ecr.us-east-2.amazonaws.com
+
+# build, tag and push
+docker build -t pharmacy-mcp .
+docker tag pharmacy-mcp:latest <account-id>.dkr.ecr.us-east-2.amazonaws.com/pharmacy-mcp:latest
+docker push <account-id>.dkr.ecr.us-east-2.amazonaws.com/pharmacy-mcp:latest
 ```
 
-A JSON body with `"status": "ok"` means the server is up.
+The image carries only `server/` and `data/`; `.dockerignore` keeps the
+chatbot, tests and docs out. Before pushing, it can be tested locally:
 
-## 6. Note on capturing traffic (report section 7)
+```bash
+docker run -p 8080:8080 pharmacy-mcp
+curl http://localhost:8080/health
+```
 
-Cloud platforms serve over HTTPS, so a Wireshark capture against a
-deployed URL shows encrypted TLS records rather than JSON-RPC messages.
-Two ways around it:
+For the CLI, `aws login` gives temporary credentials from the console
+session, which avoids creating long-lived access keys for the root user.
 
-- Run the same HTTP server on a machine reachable over the network (or
-  on localhost) without TLS, and capture there. The JSON-RPC messages
-  are then visible in plain text.
-- Capture against the HTTPS deployment and decrypt in Wireshark using
-  an `SSLKEYLOGFILE`.
+### 5.2 Create the service
 
-Either way the messages are the same, because the transport is the same
-code.
+In the ECS console → **Express mode**:
+
+| Setting | Value |
+|---|---|
+| Image URI | `<account-id>.dkr.ecr.us-east-2.amazonaws.com/pharmacy-mcp:latest` |
+| Task execution role / infrastructure role | create new (defaults) |
+| Container port | `8080` |
+| Health check path | `/health` |
+| CPU / memory | 0.25 vCPU / 0.5 GB |
+| Environment variables | none (`PORT=8080` is set in the image) |
+
+When the deployment finishes, the service page shows the application
+URL, for example `https://ph-<id>.ecs.us-east-2.on.aws`. That is the
+value for `MCP_REMOTE_URL`.
+
+### 5.3 Verifying
+
+```bash
+curl https://<your-service>.ecs.us-east-2.on.aws/health
+```
+
+A body with `"status": "ok"` means the load balancer is routing to a
+healthy task.
+
+### 5.4 Cost
+
+Express Mode itself is free; the underlying resources are billed:
+roughly USD 16/month for the load balancer and USD 2/month for the
+smallest Fargate task. The load balancer is billed while the service
+exists, even with no traffic, so **the service must be deleted after the
+evaluation**. The image can stay in ECR and be redeployed in minutes.
+
+## 6. Known limitations of the deployment
+
+- **Orders are not durable.** Fargate tasks have an ephemeral
+  filesystem. `create_order` writes to `data/orders.json` inside the
+  container, so orders disappear when the task restarts, and two tasks
+  would each keep their own orders. A real deployment would store them
+  in an external database.
+- **The endpoint is public.** The service accepts requests from anyone
+  who knows the URL, including `create_order`. The data is fictional,
+  but a real deployment would require an API key or token on every
+  request.
+- **One connection per message.** The host's HTTP client sends
+  `Connection: close`, so every JSON-RPC message pays a full TCP and TLS
+  handshake. The Wireshark analysis measures this at about 300 ms per
+  message, of which about 100 ms is the actual request. Persistent
+  connections would remove most of that overhead.
+
+## 7. Capturing the traffic (report section 7)
+
+The load balancer only serves HTTPS, so a capture against the deployed
+URL shows TLS records instead of JSON-RPC messages. The capture in
+[`wireshark-analysis.md`](wireshark-analysis.md) was decrypted by
+setting `SSLKEYLOGFILE` before starting the host: Python writes each TLS
+session's secrets to that file, and Wireshark reads it to decrypt the
+traffic. This exposes only the ephemeral keys of those sessions, never
+the server's private key.
